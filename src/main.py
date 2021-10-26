@@ -41,7 +41,7 @@ while True:
 
     # ESC pressed
     if k%256 == 27:
-        print("Escape hit, closing...")
+        print("ESC pressed; Terminating...")
         break
 
 cv2.destroyAllWindows()
