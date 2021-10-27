@@ -28,10 +28,11 @@ def handleMouseClicks(current, stored):
             if stored[x] == False:
                 stored[x] = True
                 # print (f"Mouse button #{x} clicked.")
-                return x
+                return x + 1
         else:
             if stored[x] == True:
                 stored[x] = False
+                return 0 - (x+1)
 
 def returnNegativeColor(icolor):
     # print (icolor)
@@ -50,21 +51,25 @@ while run:
 
     mouseX, mouseY = pg.mouse.get_pos()
     match handleMouseClicks(pg.mouse.get_pressed(), m_clicked):
-        case 0:
-            print ("0")
         case 1:
-            print ("1")
+            print ("1 pressed")
         case 2:
-            print ("2")
-        case _:
-            pass
+            print ("2 pressed")
+        case 3:
+            print ("3 pressed")
+        case -1:
+            print ("1 released")
+        case -2:
+            print ("2 released")
+        case -3:
+            print ("3 released")
 
 
 
     # clear canvas
     WINDOW.fill(CLEAR_CANVAS)
 
-    mouse_pos_text, _ = FONT.render(f"{mouseX} {mouseY}", returnNegativeColor(CLEAR_CANVAS))
+    mouse_pos_text, _ = FONT.render(f"[{mouseX}, {mouseY}]", returnNegativeColor(CLEAR_CANVAS))
     WINDOW.blit(mouse_pos_text, (10, WINDOW_HEIGHT-25))
     
     pg.display.update()
