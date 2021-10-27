@@ -21,18 +21,36 @@ CLOCK = pg.time.Clock()
 FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 
 m_clicked = [False]*3
+mouse_click_list = []
+mouse_click_names = ["Primary", "Mouse Wheel", "Secundary"]
 
 def handleMouseClicks(current, stored):
+
     for x in range(len(current)):
         if current[x] == True:
             if stored[x] == False:
                 stored[x] = True
                 # print (f"Mouse button #{x} clicked.")
-                return x + 1
+
+                return x + 1, mouse_click_names[x]
         else:
             if stored[x] == True:
                 stored[x] = False
-                return 0 - (x+1)
+                return 0 - (x+1), mouse_click_names[x]
+    
+    return False, ""
+
+def mouseClickListToString():
+    string = ""
+    if mouse_click_list:
+        string = "["
+        for x in mouse_click_list:
+            string = string + str(x)
+            if x != mouse_click_list[-1]:
+                string = string + ", "
+        string = string + "]"
+    
+    return string
 
 def returnNegativeColor(icolor):
     # print (icolor)
@@ -50,27 +68,23 @@ while run:
             run = False
 
     mouseX, mouseY = pg.mouse.get_pos()
-    match handleMouseClicks(pg.mouse.get_pressed(), m_clicked):
-        case 1:
-            print ("1 pressed")
-        case 2:
-            print ("2 pressed")
-        case 3:
-            print ("3 pressed")
-        case -1:
-            print ("1 released")
-        case -2:
-            print ("2 released")
-        case -3:
-            print ("3 released")
-
+    m_clicked_id, m_clicked_name = handleMouseClicks(pg.mouse.get_pressed(), m_clicked)
+    if m_clicked_id > 0:
+        mouse_click_list.append(m_clicked_name)
+    elif m_clicked_id < 0:
+        mouse_click_list.remove(m_clicked_name)
 
 
     # clear canvas
     WINDOW.fill(CLEAR_CANVAS)
 
-    mouse_pos_text, _ = FONT.render(f"[{mouseX}, {mouseY}]", returnNegativeColor(CLEAR_CANVAS))
-    WINDOW.blit(mouse_pos_text, (10, WINDOW_HEIGHT-25))
+    # display mouse button clicks
+    mouse_click_text, mouse_click_rect = FONT.render(mouseClickListToString(), color.DARK_GRAY)
+    WINDOW.blit(mouse_click_text, (10 , WINDOW_HEIGHT-25))
+
+    # display mouse position in bottom-right
+    mouse_pos_text, mouse_pos_rect = FONT.render(f"[{mouseX}, {mouseY}]", color.GRAY)
+    WINDOW.blit(mouse_pos_text, (WINDOW_WIDTH-10 - mouse_pos_rect.width , WINDOW_HEIGHT-25))
     
     pg.display.update()
     CLOCK.tick(60)
