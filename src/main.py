@@ -2,7 +2,6 @@
 import path_setup
 path_setup.enable()
 
-import sys
 import pygame as pg
 from pygame.locals import *
 pg.init()
@@ -28,13 +27,13 @@ def returnNegativeColor(icolor):
 
     return color
 
-while True:
+run = True
+while run:
 
     # handle events
     for event in pg.event.get():
         if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
-            print ("Terminating...")
-            sys.exit()
+            run = False
 
     mouseX, mouseY = pg.mouse.get_pos()
 
@@ -46,3 +45,6 @@ while True:
     
     pg.display.update()
     CLOCK.tick(60)
+
+print ("Terminating...")
+path_setup.disable()
