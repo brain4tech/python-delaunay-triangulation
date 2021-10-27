@@ -20,6 +20,19 @@ CLOCK = pg.time.Clock()
 
 FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 
+m_clicked = [False]*3
+
+def handleMouseClicks(current, stored):
+    for x in range(len(current)):
+        if current[x] == True:
+            if stored[x] == False:
+                stored[x] = True
+                # print (f"Mouse button #{x} clicked.")
+                return x
+        else:
+            if stored[x] == True:
+                stored[x] = False
+
 def returnNegativeColor(icolor):
     # print (icolor)
     
@@ -36,6 +49,17 @@ while run:
             run = False
 
     mouseX, mouseY = pg.mouse.get_pos()
+    match handleMouseClicks(pg.mouse.get_pressed(), m_clicked):
+        case 0:
+            print ("0")
+        case 1:
+            print ("1")
+        case 2:
+            print ("2")
+        case _:
+            pass
+
+
 
     # clear canvas
     WINDOW.fill(CLEAR_CANVAS)
