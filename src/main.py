@@ -1,16 +1,24 @@
 
-import cv2
-import numpy as np
+import path_setup
+path_setup.enable()
+
+import pygame as pg
+from pygame.locals import *
+pg.init()
 
 import constants.colors as color
 
-WINDOW_ID = "Delaunay-Triangulation Visualizer"
-WINDOW_WIDTH = 1700
-WINDOW_HEIGHT = 900
+WINDOW_NAME = "Delaunay-Triangulation Visualizer"
+WINDOW_WIDTH = 1200
+WINDOW_HEIGHT = 700
+CLEAR_CANVAS = color.BLACK
 
-FONT = cv2.FONT_HERSHEY_SIMPLEX
+WINDOW = pg.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
+pg.display.set_caption(WINDOW_NAME)
 
-PLANE_RAW = np.full((WINDOW_HEIGHT, WINDOW_WIDTH, 3), color.BLACK, dtype=np.uint8)
+CLOCK = pg.time.Clock()
+
+FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 
 def returnNegativeColor(icolor):
     # print (icolor)
@@ -19,29 +27,24 @@ def returnNegativeColor(icolor):
 
     return color
 
-def mouseCallback(event, x, y, flags, param):
-    global img
+run = True
+while run:
+
+    # handle events
+    for event in pg.event.get():
+        if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
+            run = False
+
+    mouseX, mouseY = pg.mouse.get_pos()
+
+    # clear canvas
+    WINDOW.fill(CLEAR_CANVAS)
+
+    mouse_pos_text, _ = FONT.render(f"{mouseX} {mouseY}", returnNegativeColor(CLEAR_CANVAS))
+    WINDOW.blit(mouse_pos_text, (10, WINDOW_HEIGHT-25))
     
-    match event:
-        case cv2.EVENT_MOUSEMOVE:
-            img = cv2.putText(PLANE_RAW.copy(), f"{x} {y}", (10, WINDOW_HEIGHT - 10), FONT, 0.5, returnNegativeColor(PLANE_RAW[0][0].tolist()))
+    pg.display.update()
+    CLOCK.tick(60)
 
-
-img = PLANE_RAW.copy()
-
-# define window flags
-cv2.namedWindow(WINDOW_ID, flags=cv2.WINDOW_GUI_NORMAL | cv2.WINDOW_KEEPRATIO | cv2.WINDOW_AUTOSIZE)
-cv2.setMouseCallback(WINDOW_ID, mouseCallback)
-
-while True:
-
-    cv2.imshow(WINDOW_ID, img)
-
-    k = cv2.waitKey(1)
-
-    # ESC pressed
-    if k%256 == 27:
-        print("ESC pressed; Terminating...")
-        break
-
-cv2.destroyAllWindows()
+print ("Terminating...")
+path_setup.disable()
