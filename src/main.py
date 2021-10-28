@@ -2,6 +2,8 @@
 import path_setup
 path_setup.enable()
 
+from math import sqrt
+
 import pygame as pg
 from pygame.locals import *
 pg.init()
@@ -59,6 +61,27 @@ def returnNegativeColor(icolor):
 
     return color
 
+def substractColors(tuple1, tuple2, max_element = None):
+    returnlist = []
+    
+    if not max_element:
+        if len(tuple1) >= len(tuple2):
+            max_element = len(tuple1)
+        else:
+            max_element = len(tuple2)
+    
+
+    try:
+        for x in range(max_element):
+            returnlist.append(sqrt((tuple1[x]-tuple2[x])**2))
+    except Exception:
+        raise ValueError(f"Could not calculate {tuple1[x]} - {tuple2[x]}.")
+    
+    return tuple(returnlist)
+
+background_plane = pg.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+text_plane = pg.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
+
 run = True
 while run:
 
@@ -76,21 +99,24 @@ while run:
         mouse_click_list.remove(m_clicked_name)
 
 
-    # clear canvas
-    WINDOW.fill(CLEAR_CANVAS)
+    # empty planes
+    text_plane.fill(CLEAR_CANVAS)
 
-    # display mouse button clicks
-    mouse_click_text, mouse_click_rect = FONT.render(mouseClickListToString(), color.DARK_GRAY)
-    WINDOW.blit(mouse_click_text, (10 , WINDOW_HEIGHT-25))
+    # add mouse button clicks to bottom-left of text-plane
+    mouse_click_text, mouse_click_rect = FONT.render(mouseClickListToString(), substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3))
+    text_plane.blit(mouse_click_text, (10 , WINDOW_HEIGHT-25))
 
-    # display mouse position in bottom-right
+    # add mouse position in bottom-right of text-plane
     mouse_pos_text, mouse_pos_rect = FONT.render(f"[{mouseX}, {mouseY}]", color.GRAY)
-    WINDOW.blit(mouse_pos_text, (WINDOW_WIDTH-10 - mouse_pos_rect.width , WINDOW_HEIGHT-25))
+    text_plane.blit(mouse_pos_text, (WINDOW_WIDTH-10 - mouse_pos_rect.width , WINDOW_HEIGHT-25))
     
-    # display current fps
+    # add current fps in top-right of text-plane
     fps_text, fps_rect = FONT.render(str(int(CLOCK.get_fps())), color.GRAY)
-    WINDOW.blit(fps_text, (10 , 10))
+    text_plane.blit(fps_text, (10 , 10))
 
+    #draw planes in right order
+    WINDOW.blit(background_plane, (0, 0))
+    WINDOW.blit(text_plane, (0, 0))
 
     pg.display.update()
     CLOCK.tick(60)
