@@ -68,6 +68,7 @@ while run:
             run = False
 
     mouseX, mouseY = pg.mouse.get_pos()
+
     m_clicked_id, m_clicked_name = handleMouseClicks(pg.mouse.get_pressed(), m_clicked)
     if m_clicked_id > 0:
         mouse_click_list.append(m_clicked_name)
@@ -86,6 +87,11 @@ while run:
     mouse_pos_text, mouse_pos_rect = FONT.render(f"[{mouseX}, {mouseY}]", color.GRAY)
     WINDOW.blit(mouse_pos_text, (WINDOW_WIDTH-10 - mouse_pos_rect.width , WINDOW_HEIGHT-25))
     
+    # display current fps
+    fps_text, fps_rect = FONT.render(str(int(CLOCK.get_fps())), color.GRAY)
+    WINDOW.blit(fps_text, (10 , 10))
+
+
     pg.display.update()
     CLOCK.tick(60)
 
