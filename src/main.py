@@ -13,10 +13,11 @@ import constants.colors as color
 WINDOW_NAME = "Delaunay-Triangulation Visualizer"
 WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 700
+WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 CLEAR_CANVAS = color.DARK_GRAY
 POINTS_COLOR = color.MAGENTA
 
-WINDOW = pg.display.set_mode([WINDOW_WIDTH, WINDOW_HEIGHT])
+WINDOW = pg.display.set_mode(WINDOW_SIZE)
 pg.display.set_caption(WINDOW_NAME)
 
 CLOCK = pg.time.Clock()
@@ -80,7 +81,7 @@ def substractColors(tuple1, tuple2, max_element = None):
     
     return tuple(returnlist)
 
-def addAlphaChannel(input_tuple, value=255):
+def addAlpha(input_tuple, value=255):
     if value < 0 or value > 255:
         value = value%255
         
@@ -89,14 +90,10 @@ def addAlphaChannel(input_tuple, value=255):
     
     return tuple(input_list)
 
-background_plane = pg.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-background_plane.fill(CLEAR_CANVAS)
-
-text_plane = pg.Surface((WINDOW_WIDTH, WINDOW_HEIGHT), pg.SRCALPHA)
-
-points_plane = pg.Surface((WINDOW_WIDTH, WINDOW_HEIGHT))
-points_plane.set_colorkey(color.BLACK)
-points_plane.set_alpha(255)
+points_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
+text_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
+# points_plane.set_colorkey(color.BLACK)
+# points_plane.set_alpha(255)
 
 run = True
 while run:
@@ -116,31 +113,29 @@ while run:
     
     match m_clicked_id:
         case 1: # primary
-            print ("Circle spawned")
-            pg.draw.circle(points_plane, POINTS_COLOR, (mouseX, mouseY), 4)
+            pg.draw.circle(points_plane, (255, 0, 0, 255), (mouseX, mouseY), 4)
         case _:
             pass
 
 
-    # empty text-plane
-    text_plane.fill(addAlphaChannel(color.BLACK, 0))
+    # clear canvas
+    WINDOW.fill(CLEAR_CANVAS)
+    text_plane.fill(addAlpha(color.BLACK, 0))
 
-    # add mouse button clicks to bottom-left of text-plane
-    mouse_click_text, mouse_click_rect = FONT.render(mouseClickListToString(), addAlphaChannel(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
+    # draw mouse button clicks to bottom-left
+    mouse_click_text, mouse_click_rect = FONT.render(mouseClickListToString(), addAlpha(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
     text_plane.blit(mouse_click_text, (10 , WINDOW_HEIGHT-25))
 
-    # add mouse position in bottom-right of text-plane
-    mouse_pos_text, mouse_pos_rect = FONT.render(f"[{mouseX}, {mouseY}]", addAlphaChannel(color.GRAY))
+    # draw mouse position in bottom-right
+    mouse_pos_text, mouse_pos_rect = FONT.render(f"[{mouseX}, {mouseY}]", addAlpha(color.GRAY))
     text_plane.blit(mouse_pos_text, (WINDOW_WIDTH-10 - mouse_pos_rect.width , WINDOW_HEIGHT-25))
     
-    # add current fps in top-right of text-plane
-    fps_text, fps_rect = FONT.render(str(int(CLOCK.get_fps())), addAlphaChannel(color.GRAY))
+    # draw current fps in top-right of text-plane
+    fps_text, fps_rect = FONT.render(str(int(CLOCK.get_fps())), addAlpha(color.GRAY))
     text_plane.blit(fps_text, (10 , 10))
 
-    #draw planes in right order
-    WINDOW.blit(background_plane, (0, 0))
     WINDOW.blit(points_plane, (0, 0))
-    WINDOW.blit(text_plane, (0, 0))
+    WINDOW.blit(text_plane, (0,0))
 
     pg.display.update()
     CLOCK.tick(60)
