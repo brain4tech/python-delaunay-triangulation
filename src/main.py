@@ -2,12 +2,11 @@
 import path_setup
 path_setup.enable()
 
-from math import sqrt
-
 import pygame as pg
 from pygame.locals import *
 pg.init()
 
+from lib.misc import *
 import constants.colors as color
 
 WINDOW_NAME = "Delaunay-Triangulation Visualizer"
@@ -56,44 +55,9 @@ def mouseClickListToString():
     
     return string
 
-def returnNegativeColor(icolor):
-    # print (icolor)
-    
-    color = tuple([(255-value) for value in icolor])
-
-    return color
-
-def substractColors(tuple1, tuple2, max_element = None):
-    returnlist = []
-    
-    if not max_element:
-        if len(tuple1) >= len(tuple2):
-            max_element = len(tuple1)
-        else:
-            max_element = len(tuple2)
-    
-
-    try:
-        for x in range(max_element):
-            returnlist.append(sqrt((tuple1[x]-tuple2[x])**2))
-    except Exception:
-        raise ValueError(f"Could not calculate {tuple1[x]} - {tuple2[x]}.")
-    
-    return tuple(returnlist)
-
-def addAlpha(input_tuple, value=255):
-    if value < 0 or value > 255:
-        value = value%255
-        
-    input_list = list(input_tuple)
-    input_list.append(value)
-    
-    return tuple(input_list)
-
+# create planes with transparency
 points_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 text_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
-# points_plane.set_colorkey(color.BLACK)
-# points_plane.set_alpha(255)
 
 run = True
 while run:
@@ -113,13 +77,11 @@ while run:
     
     match m_clicked_id:
         case 1: # primary
-            pg.draw.circle(points_plane, (255, 0, 0, 255), (mouseX, mouseY), 4)
+            pg.draw.circle(points_plane, addAlpha(color.MAGENTA),(mouseX, mouseY), 4)
         case _:
             pass
 
 
-    # clear canvas
-    WINDOW.fill(CLEAR_CANVAS)
     text_plane.fill(addAlpha(color.BLACK, 0))
 
     # draw mouse button clicks to bottom-left
@@ -134,6 +96,9 @@ while run:
     fps_text, fps_rect = FONT.render(str(int(CLOCK.get_fps())), addAlpha(color.GRAY))
     text_plane.blit(fps_text, (10 , 10))
 
+
+    # clear canvas and draw planes
+    WINDOW.fill(CLEAR_CANVAS)
     WINDOW.blit(points_plane, (0, 0))
     WINDOW.blit(text_plane, (0,0))
 
