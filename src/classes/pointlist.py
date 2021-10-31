@@ -10,6 +10,14 @@ class PointList:
         "Adds a new point to the PointList."
         self.__plist.append(point)
     
+    def getPoints(self):
+        """Returns all stored Points in a list."""
+        list_return = []
+        for element in self.__plist:
+            list_return.append(element)
+        
+        return list_return
+    
     # O(n)
     def getNearestPoint(self, point: Point or tuple):
         """Returns the nearest point to a given tuple of Point."""
@@ -46,3 +54,11 @@ class PointList:
         
         else:
             raise ValueError("Unsupported parameter passed for 'point'")
+
+if __name__ == '__main__':
+    test_list = PointList()
+
+    test_list.addPoint(Point(23, 34))
+    test_list.addPoint(Point(2, 3))
+
+    print(test_list.getPoints())
