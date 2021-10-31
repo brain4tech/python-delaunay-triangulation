@@ -13,13 +13,10 @@ class Point:
         self.y = new_y
 
     def getPoint(self):
-        return self.__call__()
-
-    def __call__(self):
-        return (self.x, self.y)
+        return self.__repr__()
 
     def __repr__(self):
-        return str(self.__call__())
+        return str((self.x, self.y))
     
     def __str__(self):
-        return str(self.__call__())
+        return self.__repr__()
