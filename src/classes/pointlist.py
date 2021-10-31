@@ -1,6 +1,6 @@
 # class for storing all points and their triangles
 
-from point import Point
+from classes.point import Point
 
 class PointList:
     def __init__(self):
@@ -24,7 +24,7 @@ class PointList:
 
         if isinstance(point, Point):
             nearest_point = (0,0)
-            nearest_distance = (1000000, 1000000) # use unreachable high number for first comparison
+            nearest_distance = [1000000, 1000000] # use unreachable high number for first comparison
 
             for element in self.__plist:
                 distance_x = abs(element.x - point.x)
@@ -40,7 +40,7 @@ class PointList:
         elif isinstance(point, tuple):
             if len(point) == 2:
                 nearest_point = (0,0)
-                nearest_distance = (1000000, 1000000) # use unreachable high number for first comparison
+                nearest_distance = [1000000, 1000000] # use unreachable high number for first comparison
 
                 for element in self.__plist:
                     distance_x = abs(element.x - point[0])
