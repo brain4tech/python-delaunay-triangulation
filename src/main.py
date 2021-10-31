@@ -6,6 +6,8 @@ import pygame as pg
 from pygame.locals import *
 pg.init()
 
+from classes.pointlist import Point, PointList
+
 from lib.misc import *
 import constants.colors as color
 
@@ -59,6 +61,9 @@ def mouseClickListToString():
 points_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 text_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 
+point_list = PointList()
+point_list.generatePoints(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 30, padding=20)
+
 run = True
 while run:
 
@@ -77,12 +82,18 @@ while run:
     
     match m_clicked_id:
         case 1: # primary
-            pg.draw.circle(points_plane, addAlpha(color.MAGENTA),(mouseX, mouseY), 4)
+            temp_point = Point(mouseX, mouseY)
+            point_list.addPoint(temp_point)
+            # pg.draw.circle(points_plane, addAlpha(color.MAGENTA),(temp_point.x, temp_point.y), 4)
         case _:
             pass
 
 
     text_plane.fill(addAlpha(color.BLACK, 0))
+    points_plane.fill(addAlpha(color.BLACK, 0))
+
+    for point in point_list.getPoints():
+        pg.draw.circle(points_plane, addAlpha(color.MAGENTA),(point.x, point.y), 4)
 
     # draw mouse button clicks to bottom-left
     mouse_click_text, mouse_click_rect = FONT.render(mouseClickListToString(), addAlpha(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
@@ -106,4 +117,6 @@ while run:
     CLOCK.tick(60)
 
 print ("Terminating...")
+print (f"Pointlist: {point_list.getPoints()}")
+print (f"Nearest Point to 500|500 is: {point_list.getNearestPoint(Point(500, 500))}")
 path_setup.disable()
