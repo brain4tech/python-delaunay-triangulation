@@ -1,5 +1,7 @@
 # class for storing all points and their triangles
 
+from random import randint
+
 from classes.point import Point
 
 class PointList:
@@ -12,11 +14,11 @@ class PointList:
     
     def getPoints(self):
         """Returns all stored Points in a list."""
-        list_return = []
-        for element in self.__plist:
-            list_return.append(element)
-        
-        return list_return
+        return self.__plist
+    
+    def generatePoints(self, minX, maxX, minY, maxY, count, padding = 0):
+        for _ in range(count):
+            self.addPoint(Point(randint(minX+padding, maxX-padding), randint(minY+padding, maxY-padding)))
     
     # O(n)
     def getNearestPoint(self, point: Point or tuple):
@@ -58,7 +60,9 @@ class PointList:
 if __name__ == '__main__':
     test_list = PointList()
 
-    test_list.addPoint(Point(23, 34))
-    test_list.addPoint(Point(2, 3))
+    # test_list.addPoint(Point(23, 34))
+    # test_list.addPoint(Point(2, 3))
+
+    test_list.generatePoints(0, 400, 0, 200, 10)
 
     print(test_list.getPoints())
