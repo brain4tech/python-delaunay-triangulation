@@ -16,11 +16,11 @@ class Point:
     def setColor(self, new_color):
         self.color = new_color
 
-    def getPoint(self):
+    def me(self):
         return self.__repr__()
 
     def __repr__(self):
-        return str((self.x, self.y))
+        return (self.x, self.y)
     
     def __str__(self):
-        return self.__repr__()
+        return str(self.__repr__())
