@@ -1,4 +1,5 @@
 
+# import modules and libaries
 import path_setup
 path_setup.enable()
 
@@ -11,6 +12,7 @@ from classes.pointlist import Point, PointList
 from lib.misc import *
 import constants.colors as color
 
+# constants for main loop
 WINDOW_NAME = "Delaunay-Triangulation Visualizer"
 WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 700
@@ -20,6 +22,7 @@ POINT_RADIUS = 4
 POINT_COLOR = color.MAGENTA
 POINT_COLOR_SELECTED = color.GREEN
 
+# setup
 WINDOW = pg.display.set_mode(WINDOW_SIZE)
 pg.display.set_caption(WINDOW_NAME)
 
@@ -27,10 +30,12 @@ CLOCK = pg.time.Clock()
 
 FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 
+# init variables
 m_clicked = [False]*3
 mouse_click_list = []
 mouse_click_names = ["Primary", "Mouse Wheel", "Secundary"]
 
+# define functions
 def handleMouseClicks(current, stored):
 
     for x in range(len(current)):
@@ -66,9 +71,12 @@ text_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 point_list = PointList()
 point_list.generatePoints(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 30, color = color.MAGENTA, padding=20)
 
+# loop setup
+
 run = True
 selected_point = None
 
+# start main loop
 while run:
 
     # handle events
@@ -101,15 +109,10 @@ while run:
     elif m_clicked_id < 0:
         mouse_click_list.remove(m_clicked_name)
     
-
-    # ToDo: Make points clickable (secundary) and deletable (del-key)
-    # If secundary click: get nearest point (getNearestPoint(mouse pos)) and check if mouse is within radius (determinant) or dirty coordinate calculations
-
     match m_clicked_id:
         case 1: # primary, create point
             temp_point = Point(mouseX, mouseY, POINT_COLOR)
             point_list.addPoint(temp_point)
-            # pg.draw.circle(points_plane, addAlpha(color.MAGENTA),(temp_point.x, temp_point.y), 4)
         
         case 3: # secundary, mark point and show details
             nearest_point = point_list.getNearestPoint((mouseX, mouseY))
@@ -155,6 +158,4 @@ while run:
     CLOCK.tick(60)
 
 print ("Terminating...")
-# print (f"Pointlist: {point_list.getPoints()}")
-# print (f"Nearest Point to 500|500 is: {point_list.getNearestPoint((500, 500))}")
 path_setup.disable()
