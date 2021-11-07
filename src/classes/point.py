@@ -1,7 +1,7 @@
 # class for representing one point
 
 class Point:
-    def __init__(self, x_, y_, color_):
+    def __init__(self, x_, y_, color_ = (0, 0, 0)):
         self.x = x_
         self.y = y_
         self.color = color_
