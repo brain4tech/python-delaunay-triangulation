@@ -9,13 +9,14 @@ import pygame as pg
 from pygame.locals import *
 pg.init()
 
+from classes.mouseclickorder import MouseClickOrder
 from classes.pointlist import Point, PointList
 from classes.trianglelist import Triangle, TriangleList
 
 from lib.misc import *
 import constants.colors as color
 
-# constants for main loop
+# CONSTANTS FOR MAIN LOOP
 WINDOW_NAME = "Delaunay-Triangulation Visualizer"
 WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 700
@@ -25,7 +26,7 @@ POINT_RADIUS = 10
 POINT_COLOR = color.MAGENTA
 POINT_COLOR_SELECTED = color.GREEN
 
-# setup
+# PYGAME SETUP
 WINDOW = pg.display.set_mode(WINDOW_SIZE)
 pg.display.set_caption(WINDOW_NAME)
 
@@ -34,37 +35,9 @@ CLOCK = pg.time.Clock()
 FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 
 # init variables
-m_clicked = [False]*3
-mouse_click_list = []
-mouse_click_names = ["Primary", "Mouse Wheel", "Secundary"]
+mouse_input = MouseClickOrder(3, ["Primary", "Mouse Wheel", "Secundary"])
 
 # define functions
-def handleMouseClicks(current, stored):
-
-    for x in range(len(current)):
-        if current[x] == True:
-            if stored[x] == False:
-                stored[x] = True
-                return x + 1, mouse_click_names[x]
-        else:
-            if stored[x] == True:
-                stored[x] = False
-                return 0 - (x+1), mouse_click_names[x]
-    
-    return False, ""
-
-def mouseClickListToString():
-    string = ""
-    if mouse_click_list:
-        string = "["
-        for x in mouse_click_list:
-            string = string + str(x)
-            if x != mouse_click_list[-1]:
-                string = string + ", "
-        string = string + "]"
-    
-    return string
-
 def calculateMotherTriangle(rectangle_width, rectangle_height):
     """returns height and side length of a equilateral (gleichseitig) triangle around the given triangle"""
     side_length = rectangle_width + 2 * rectangle_height
@@ -145,12 +118,7 @@ while run:
                         
 
     mouseX, mouseY = pg.mouse.get_pos()
-
-    m_clicked_id, m_clicked_name = handleMouseClicks(pg.mouse.get_pressed(), m_clicked)
-    if m_clicked_id > 0:
-        mouse_click_list.append(m_clicked_name)
-    elif m_clicked_id < 0:
-        mouse_click_list.remove(m_clicked_name)
+    m_clicked_id = mouse_input.handleMouseClickOrder(pg.mouse.get_pressed())
     
     match m_clicked_id:
         case 1: # primary, create point
@@ -191,7 +159,7 @@ while run:
         pg.draw.line(lines_plane, addAlpha(color.WHITE), pc.me(), pa.me(), 3)
 
     # draw mouse button clicks to bottom-left
-    mouse_click_text, mouse_click_rect = FONT.render(mouseClickListToString(), addAlpha(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
+    mouse_click_text, mouse_click_rect = FONT.render(mouse_input.getClickOrderString(), addAlpha(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
     text_plane.blit(mouse_click_text, (10 , WINDOW_HEIGHT-25))
 
     # draw mouse position in bottom-right
