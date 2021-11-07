@@ -17,10 +17,22 @@ class Point:
         self.color = new_color
 
     def me(self):
-        return self.__repr__()
+        return self.__toReadable()
+    
+    def __toReadable(self):
+        return (self.x, self.y)
 
     def __repr__(self):
-        return (self.x, self.y)
+        return str(self.__toReadable())
     
     def __str__(self):
-        return str(self.__repr__())
+        return str(self.__toReadable())
+
+    def __lt__(self, other):
+        if self.x < other.x:
+            return True
+        if self.x == other.x:
+            if self.y < other.y:
+                return True
+        
+        return False
