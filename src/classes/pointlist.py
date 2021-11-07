@@ -15,6 +15,9 @@ class PointList:
     def remove(self, point: Point):
         self.__plist.remove(point)
     
+    def clear(self):
+        self.__plist.clear()
+    
     def me(self):
         """Returns all stored Points in a list."""
         return self.__plist[:]
