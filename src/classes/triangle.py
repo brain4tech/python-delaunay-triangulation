@@ -132,8 +132,6 @@ class Triangle:
         # C: remaining point
         self.__pc = sorted_points[0]
 
-        print(self.me())
-
         # calculate center and radius of circumcircle
         self.__calculateCCenter()
         self.__calculateCRadius()
