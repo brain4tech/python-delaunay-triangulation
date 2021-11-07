@@ -10,6 +10,7 @@ from pygame.locals import *
 pg.init()
 
 from classes.mouseclickorder import MouseClickOrder
+from classes.mothertriangle import MotherTriangle
 from classes.pointlist import Point, PointList
 from classes.trianglelist import Triangle, TriangleList
 
@@ -29,22 +30,11 @@ POINT_COLOR_SELECTED = color.GREEN
 # PYGAME SETUP
 WINDOW = pg.display.set_mode(WINDOW_SIZE)
 pg.display.set_caption(WINDOW_NAME)
-
 CLOCK = pg.time.Clock()
-
 FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 
 # init variables
 mouse_input = MouseClickOrder(3, ["Primary", "Mouse Wheel", "Secundary"])
-
-# define functions
-def calculateMotherTriangle(rectangle_width, rectangle_height):
-    """returns height and side length of a equilateral (gleichseitig) triangle around the given triangle"""
-    side_length = rectangle_width + 2 * rectangle_height
-    triangle_height = sqrt(side_length**2 - (side_length/2)**2)
-
-    return side_length, triangle_height
-
 
 # create planes with transparency
 points_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
@@ -58,6 +48,8 @@ point_list.generatePoints(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 3, color = color.MA
 triangle_list = TriangleList()
 TRIANGLE_COUNT = 5
 
+mother_triangle = MotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT, 0.2)
+
 for _ in range(TRIANGLE_COUNT):
     point_list.clear()
     point_list.generatePoints(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 3, color = color.MAGENTA, padding=10)
@@ -65,18 +57,13 @@ for _ in range(TRIANGLE_COUNT):
     temp_triangle.setCornerPoints(point_list.me())
     triangle_list.append(temp_triangle)
 
-mtriangle_points = []
-mtriangle_length, mtriangle_height = calculateMotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT)
 
-mtriangle_points.append((WINDOW_WIDTH/2 - mtriangle_length/2, WINDOW_HEIGHT)) # bottom left
-mtriangle_points.append((WINDOW_WIDTH/2 + mtriangle_length/2, WINDOW_HEIGHT)) # bottom right
-mtriangle_points.append((WINDOW_WIDTH/2, WINDOW_HEIGHT - mtriangle_height)) # top
-
-# mtriangle_rect = pg.Rect(WINDOW_WIDTH/2 - (WINDOW_WIDTH)/2, WINDOW_HEIGHT - WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT)
-# pg.draw.rect(triangle_plane, color.RED, mtriangle_rect)
-# pg.draw.line(triangle_plane, color.WHITE, mtriangle_points[0], mtriangle_points[1], 4)
-# pg.draw.line(triangle_plane, color.WHITE, mtriangle_points[1], mtriangle_points[2], 4)
-# pg.draw.line(triangle_plane, color.WHITE, mtriangle_points[0], mtriangle_points[2], 4)
+mtriangle_rect = pg.Rect(WINDOW_WIDTH/2 - (WINDOW_WIDTH*0.2)/2, WINDOW_HEIGHT - WINDOW_HEIGHT*0.2, WINDOW_WIDTH*0.2, WINDOW_HEIGHT*0.2)
+pg.draw.rect(triangle_plane, color.RED, mtriangle_rect)
+print (mother_triangle.me())
+pg.draw.line(triangle_plane, color.WHITE, mother_triangle.getPointA().me(), mother_triangle.getPointB().me(), 4)
+pg.draw.line(triangle_plane, color.WHITE, mother_triangle.getPointB().me(), mother_triangle.getPointC().me(), 4)
+pg.draw.line(triangle_plane, color.WHITE, mother_triangle.getPointC().me(), mother_triangle.getPointA().me(), 4)
 
 # loop setup
 
@@ -145,6 +132,7 @@ while run:
     # for point in point_list.me():
     #     pg.draw.circle(points_plane, addAlpha(point.color),(point.x, point.y), POINT_RADIUS)
 
+    """
     for triangle in triangle_list.me():
         pa = triangle.getPointA()
         pb = triangle.getPointB()
@@ -157,6 +145,9 @@ while run:
         pg.draw.line(lines_plane, addAlpha(color.WHITE), pa.me(), pb.me(), 3)
         pg.draw.line(lines_plane, addAlpha(color.WHITE), pb.me(), pc.me(), 3)
         pg.draw.line(lines_plane, addAlpha(color.WHITE), pc.me(), pa.me(), 3)
+    """
+
+
 
     # draw mouse button clicks to bottom-left
     mouse_click_text, mouse_click_rect = FONT.render(mouse_input.getClickOrderString(), addAlpha(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
