@@ -6,9 +6,20 @@ from classes.triangle import Triangle
 class TriangleList:
     def __init__(self):
         self.__tlist: list[Triangle] = []
+        self.__id_counter = 0
 
     def append(self, triangle: Triangle):
         """Appends a given triangle to the list"""
+
+        triangle.setId(self.__id_counter)
+        self.__id_counter += 1
+
+        # prevent duplicates
+        for triangle_set in set(self.__tlist):
+            if triangle.me() == triangle_set.me():
+                print ("duplicate found, removed triangle", triangle.Id())
+                return
+
         self.__tlist.append(triangle)
     
     def remove(self, triangle: Triangle):
