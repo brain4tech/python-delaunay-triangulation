@@ -14,6 +14,7 @@ class MouseClickOrder:
         self.__last_input_id = 0
     
     def handleMouseClickOrder (self, new_input):
+        self.__last_input_id = 0
         for x in range(self.__count):
             if new_input[x] == True:
                 if self.__clicked[x] == False:
