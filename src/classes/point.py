@@ -1,7 +1,7 @@
 # class for representing one point
 
 class Point:
-    def __init__(self, x_, y_, color_):
+    def __init__(self, x_, y_, color_ = (0, 0, 0)):
         self.x = x_
         self.y = y_
         self.color = color_
@@ -16,11 +16,23 @@ class Point:
     def setColor(self, new_color):
         self.color = new_color
 
-    def getPoint(self):
-        return self.__repr__()
+    def me(self):
+        return self.__toReadable()
+    
+    def __toReadable(self):
+        return (self.x, self.y)
 
     def __repr__(self):
-        return str((self.x, self.y))
+        return str(self.__toReadable())
     
     def __str__(self):
-        return self.__repr__()
+        return str(self.__toReadable())
+
+    def __lt__(self, other):
+        if self.x < other.x:
+            return True
+        if self.x == other.x:
+            if self.y < other.y:
+                return True
+        
+        return False
