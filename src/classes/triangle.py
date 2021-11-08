@@ -6,12 +6,15 @@ from math import sqrt
 from classes.point import Point
 
 class Triangle:
-    def __init__(self):
+    def __init__(self, points: list[Point]= None):
         self.__pa = None
         self.__pb = None
         self.__pc = None
         self.__ccenter = None
         self.__cradius = None
+
+        if points:
+            self.setCornerPoints(points)
     
     def reset(self):
         """Resets all stored and calculated values"""
@@ -25,10 +28,11 @@ class Triangle:
         """Calculates center point of triangle circumcircle"""
         # https://en.wikipedia.org/wiki/Circumscribed_circle#Circumcenter_coordinates
 
-        d = 2*(self.__pa.x * (self.__pb.x + self.__pc.x) + self.__pb.x * (self.__pc.x + self.__pa.x) + self.__pc.x * (self.__pa.x + self.__pb.x))
-        x = (self.__pa.x**2 + self.__pa.y**2)*(self.__pb.y + self.__pc.y) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pc.y - self.__pa.y) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pa.y - self.__pb.y)
-        y = (self.__pa.x**2 + self.__pa.y**2)*(self.__pc.x + self.__pb.x) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pa.x - self.__pc.x) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pb.x - self.__pa.x)
-
+        x = (self.__pa.x**2 + self.__pa.y**2)*(self.__pb.y - self.__pc.y) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pc.y - self.__pa.y) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pa.y - self.__pb.y)
+        y = (self.__pa.x**2 + self.__pa.y**2)*(self.__pc.x - self.__pb.x) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pa.x - self.__pc.x) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pb.x - self.__pa.x)
+        
+        d = 2*(self.__pa.x * (self.__pb.y - self.__pc.y) + self.__pb.x * (self.__pc.y - self.__pa.y) + self.__pc.x * (self.__pa.y - self.__pb.y))
+        
         self.__ccenter = (x/d, y/d)
 
     def __calculateCRadius(self):
@@ -37,8 +41,8 @@ class Triangle:
 
     def __calculateDistance(self, pfrom, pto):
         """Returns distance from two given points"""
-        difference_x = abs(pfrom[0] - pto[0])
-        difference_y = abs(pfrom[1] - pto[1])
+        difference_x = pto[0] - pfrom[0]
+        difference_y = pto[1] - pfrom[1]
 
         return sqrt(difference_x**2 + difference_y**2)
     
@@ -147,6 +151,14 @@ class Triangle:
     def getPointC(self):
         """Returns point C"""
         return self.__pc
+    
+    def getCircumcircleCenter(self):
+        """Returns center position of circumcircle"""
+        return self.__ccenter
+
+    def getCircumcircleRadius(self):
+        """Returns radius of circumcircle"""
+        return self.__cradius
 
     def isPointInCircumcircle(self, point):
         """Check if given point is within circumcircle of triangle"""
