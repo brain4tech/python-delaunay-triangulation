@@ -30,6 +30,8 @@ POINT_COLOR_SELECTED = color.GREEN
 
 MOUSE_INPUT = MouseClickOrder(3, ["Primary", "Mouse Wheel", "Secundary"])
 
+DRAW_MOTHER_TRIANGLE_LINES = True
+
 # PYGAME SETUP
 WINDOW = pg.display.set_mode(WINDOW_SIZE)
 pg.display.set_caption(WINDOW_NAME)
@@ -39,19 +41,28 @@ FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 # CREATE TRANSPARENT PLANES
 points_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 lines_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
+circumcircle_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 text_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 
 # INIT LISTS
 point_list = PointList()
 triangle_list = TriangleList()
-mother_triangle = MotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT, 0.2)
+mother_triangle = MotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT, 0.3)
+mother_triangle_list = TriangleList()
 
 # VARS FOR LOOP
 run = True
 selected_point = None
+draw_circumcribed_circles = False
 
 # MAI LOOP
 while run:
+
+    # clear planes
+    circumcircle_plane.fill(addAlpha(color.BLACK, 0))
+    points_plane.fill(addAlpha(color.BLACK, 0))
+    lines_plane.fill(addAlpha(color.BLACK, 0))
+    text_plane.fill(addAlpha(color.BLACK, 0))
 
     # handle events
     for event in pg.event.get():
@@ -71,6 +82,17 @@ while run:
                         point_list.remove(selected_point)
                         selected_point = None
 
+                case pg.K_F10:
+                    point_list.clear()
+                    triangle_list.clear()
+                    mother_triangle_list.clear()
+                
+                case pg.K_F8:
+                    if draw_circumcribed_circles:
+                        draw_circumcribed_circles = False
+                    else:
+                        draw_circumcribed_circles = True
+
                 case _:
                     pass
                         
@@ -80,11 +102,26 @@ while run:
     
     match m_clicked_id:
         case 1: # primary, create point
-            temp_point = Point(mouse_x, mouse_y, POINT_COLOR)
-            point_list.append(temp_point)
+            
+            # reset color of selected point
             if selected_point:
                 selected_point.setColor(POINT_COLOR)
                 selected_point = None
+            
+            # create new point
+            new_point = Point(mouse_x, mouse_y, POINT_COLOR)
+
+            # (re)calculate triangulation
+            if len(mother_triangle_list.me()) == 0: # no triangles yet
+                print ("first point")
+                mother_triangle_list.append(Triangle([mother_triangle.getPointA(), mother_triangle.getPointB(), new_point]))
+                mother_triangle_list.append(Triangle([mother_triangle.getPointB(), mother_triangle.getPointC(), new_point]))
+                mother_triangle_list.append(Triangle([mother_triangle.getPointC(), mother_triangle.getPointA(), new_point]))
+            
+
+            # add point to global point list
+            point_list.append(new_point)
+
         
         case 3: # secundary, mark point and show details
             nearest_point = point_list.getNearestPoint((mouse_x, mouse_y))
@@ -98,11 +135,16 @@ while run:
         case _:
             pass
 
+    for triangle in triangle_list.me():
+        drawTriangleLines(lines_plane, triangle, color.WHITE, 3)
     
-    # clear planes
-    text_plane.fill(addAlpha(color.BLACK, 0))
-    points_plane.fill(addAlpha(color.BLACK, 0))
-    lines_plane.fill(addAlpha(color.BLACK, 0))
+    if DRAW_MOTHER_TRIANGLE_LINES:
+        drawTriangleLines(lines_plane, mother_triangle, color.RED, 3)
+        for triangle in mother_triangle_list.me():
+            drawTriangleLines(lines_plane, triangle, color.LIGHT_GRAY, 3)
+            if draw_circumcribed_circles:
+                drawTriangleCircumcircleCenter(circumcircle_plane, triangle, color.BLUE, 2)
+                drawTriangleCircumcircle(circumcircle_plane, triangle, color.AQUA, 5)
 
     for point in point_list.me():
         pg.draw.circle(points_plane, addAlpha(point.color),(point.x, point.y), POINT_RADIUS)
@@ -124,6 +166,7 @@ while run:
     # clear canvas and draw planes
     WINDOW.fill(CLEAR_CANVAS)
 
+    WINDOW.blit(circumcircle_plane, (0, 0))
     WINDOW.blit(lines_plane, (0, 0))
     WINDOW.blit(points_plane, (0, 0))
     WINDOW.blit(text_plane, (0,0))
