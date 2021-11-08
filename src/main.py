@@ -24,9 +24,11 @@ WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 700
 WINDOW_SIZE = (WINDOW_WIDTH, WINDOW_HEIGHT)
 CLEAR_CANVAS = color.DARK_GRAY
-POINT_RADIUS = 10
+POINT_RADIUS = 5
 POINT_COLOR = color.MAGENTA
 POINT_COLOR_SELECTED = color.GREEN
+
+MOUSE_INPUT = MouseClickOrder(3, ["Primary", "Mouse Wheel", "Secundary"])
 
 # PYGAME SETUP
 WINDOW = pg.display.set_mode(WINDOW_SIZE)
@@ -34,42 +36,21 @@ pg.display.set_caption(WINDOW_NAME)
 CLOCK = pg.time.Clock()
 FONT = pg.freetype.Font('assets/fonts/Roboto/Roboto-Medium.ttf', size=12)
 
-# init variables
-mouse_input = MouseClickOrder(3, ["Primary", "Mouse Wheel", "Secundary"])
-
-# create planes with transparency
+# CREATE TRANSPARENT PLANES
 points_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 lines_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 text_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
-triangle_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 
+# INIT LISTS
 point_list = PointList()
-point_list.generatePoints(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 3, color = color.MAGENTA, padding=300)
-
 triangle_list = TriangleList()
-TRIANGLE_COUNT = 2
-
 mother_triangle = MotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT, 0.2)
 
-for _ in range(TRIANGLE_COUNT):
-    point_list.clear()
-    point_list.generatePoints(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 3, color = color.MAGENTA, padding=10)
-    temp_triangle = Triangle()
-    temp_triangle.setCornerPoints(point_list.me())
-    triangle_list.append(temp_triangle)
-
-
-mtriangle_rect = pg.Rect(WINDOW_WIDTH/2 - (WINDOW_WIDTH*0.2)/2, WINDOW_HEIGHT - WINDOW_HEIGHT*0.2, WINDOW_WIDTH*0.2, WINDOW_HEIGHT*0.2)
-pg.draw.rect(triangle_plane, color.RED, mtriangle_rect)
-drawTriangleLines(triangle_plane, mother_triangle, color.WHITE, 4)
-drawTrianglePoints(triangle_plane, mother_triangle, POINT_RADIUS)
-
-# loop setup
-
+# VARS FOR LOOP
 run = True
 selected_point = None
 
-# start main loop
+# MAI LOOP
 while run:
 
     # handle events
@@ -90,31 +71,25 @@ while run:
                         point_list.remove(selected_point)
                         selected_point = None
 
-                case pg.K_F10:
-                    triangle_list.clear()
-                    for _ in range(TRIANGLE_COUNT):
-                        point_list.clear()
-                        point_list.generatePoints(0, WINDOW_WIDTH, 0, WINDOW_HEIGHT, 3, color = color.MAGENTA, padding=10)
-                        temp_triangle = Triangle()
-                        temp_triangle.setCornerPoints(point_list.me())
-                        triangle_list.append(temp_triangle)
-
                 case _:
                     pass
                         
     # handle mouse input display
     mouse_x, mouse_y = pg.mouse.get_pos()
-    m_clicked_id = mouse_input.handleMouseClickOrder(pg.mouse.get_pressed())
+    m_clicked_id = MOUSE_INPUT.handleMouseClickOrder(pg.mouse.get_pressed())
     
     match m_clicked_id:
         case 1: # primary, create point
             temp_point = Point(mouse_x, mouse_y, POINT_COLOR)
             point_list.append(temp_point)
+            if selected_point:
+                selected_point.setColor(POINT_COLOR)
+                selected_point = None
         
         case 3: # secundary, mark point and show details
             nearest_point = point_list.getNearestPoint((mouse_x, mouse_y))
             clickradius = POINT_RADIUS + 10
-            if abs(nearest_point.x - mouse_x) < clickradius and abs(nearest_point.y - mouse_y) < clickradius:
+            if abs(nearest_point.x - mouse_x) <= clickradius and abs(nearest_point.y - mouse_y) <= clickradius:
                 if selected_point:
                     selected_point.setColor(POINT_COLOR)
 
@@ -129,20 +104,12 @@ while run:
     points_plane.fill(addAlpha(color.BLACK, 0))
     lines_plane.fill(addAlpha(color.BLACK, 0))
 
-    # for point in point_list.me():
-    #     pg.draw.circle(points_plane, addAlpha(point.color),(point.x, point.y), POINT_RADIUS)
-
-    for triangle in triangle_list.me():
-        triangle.getPointA().setColor(color.RED)
-        triangle.getPointB().setColor(color.GREEN)
-        triangle.getPointC().setColor(color.BLUE)
-
-        drawTrianglePoints(points_plane, triangle, POINT_RADIUS)
-        drawTriangleLines(lines_plane, triangle, color.WHITE, 3)
+    for point in point_list.me():
+        pg.draw.circle(points_plane, addAlpha(point.color),(point.x, point.y), POINT_RADIUS)
 
     # draw text
     # draw mouse button clicks to bottom-left
-    mouse_click_text, mouse_click_rect = FONT.render(mouse_input.getClickOrderString(), addAlpha(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
+    mouse_click_text, mouse_click_rect = FONT.render(MOUSE_INPUT.getClickOrderString(), addAlpha(substractColors(CLEAR_CANVAS, color.DARK_GRAY, 3)))
     text_plane.blit(mouse_click_text, (10 , WINDOW_HEIGHT-25))
 
     # draw mouse position in bottom-right
@@ -159,7 +126,6 @@ while run:
 
     WINDOW.blit(lines_plane, (0, 0))
     WINDOW.blit(points_plane, (0, 0))
-    WINDOW.blit(triangle_plane, (0, 0))
     WINDOW.blit(text_plane, (0,0))
 
     pg.display.update()
