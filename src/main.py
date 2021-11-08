@@ -9,6 +9,7 @@ import pygame as pg
 from pygame.locals import *
 pg.init()
 
+from classes.polygonpointlist import PolygonPointList
 from classes.mouseclickorder import MouseClickOrder
 from classes.mothertriangle import MotherTriangle
 from classes.pointlist import Point, PointList
@@ -47,13 +48,20 @@ text_plane = pg.Surface(WINDOW_SIZE, pg.SRCALPHA)
 # INIT LISTS
 point_list = PointList()
 triangle_list = TriangleList()
-mother_triangle = MotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT, 0.3)
+mother_triangle = MotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT)
 mother_triangle_list = TriangleList()
 
 # VARS FOR LOOP
 run = True
 selected_point = None
+new_point = None
+polygon_center = None
 draw_circumcribed_circles = False
+circumcircle_list = []
+temp_color = list(color.GREEN)
+show_id = 0
+polygon_point_list = PolygonPointList()
+sorted_point_list = []
 
 # MAI LOOP
 while run:
@@ -86,12 +94,17 @@ while run:
                     point_list.clear()
                     triangle_list.clear()
                     mother_triangle_list.clear()
+                    circumcircle_list.clear()
                 
                 case pg.K_F8:
                     if draw_circumcribed_circles:
                         draw_circumcribed_circles = False
                     else:
                         draw_circumcribed_circles = True
+                
+                case pg.K_F6:
+                    show_id += 1
+                    print (show_id)
 
                 case _:
                     pass
@@ -117,10 +130,29 @@ while run:
                 mother_triangle_list.append(Triangle([mother_triangle.getPointA(), mother_triangle.getPointB(), new_point]))
                 mother_triangle_list.append(Triangle([mother_triangle.getPointB(), mother_triangle.getPointC(), new_point]))
                 mother_triangle_list.append(Triangle([mother_triangle.getPointC(), mother_triangle.getPointA(), new_point]))
+                
             
+            else:
+                circumcircle_list.clear()
+                polygon_point_list.clear()
+                for triangle in mother_triangle_list.getPointInCircumcircles(new_point.me()):
+                    circumcircle_list.append(triangle)
+                    mother_triangle_list.remove(triangle)
+                    print ("new point within circumcircle of triangle", triangle.Id())
+                    polygon_point_list.append(triangle.getPointA())
+                    polygon_point_list.append(triangle.getPointB())
+                    polygon_point_list.append(triangle.getPointC())
+
+                sorted_point_list.clear()
+                sorted_point_list, polygon_center = polygon_point_list.sortPoints()
+                for i in range(len(sorted_point_list)):
+                    mother_triangle_list.append(Triangle([sorted_point_list[i], sorted_point_list[0 if i == len(sorted_point_list)-1 else i+1], new_point]))
+                    print ("connecting point", sorted_point_list[i], "with", sorted_point_list[0 if i == len(sorted_point_list)-1 else i+1], "and", new_point.me())
+                    
+                print ("sorted polygon list 2", sorted_point_list)
 
             # add point to global point list
-            point_list.append(new_point)
+            # point_list.append(new_point)
 
         
         case 3: # secundary, mark point and show details
@@ -140,14 +172,45 @@ while run:
     
     if DRAW_MOTHER_TRIANGLE_LINES:
         drawTriangleLines(lines_plane, mother_triangle, color.RED, 3)
-        for triangle in mother_triangle_list.me():
-            drawTriangleLines(lines_plane, triangle, color.LIGHT_GRAY, 3)
-            if draw_circumcribed_circles:
-                drawTriangleCircumcircleCenter(circumcircle_plane, triangle, color.BLUE, 2)
-                drawTriangleCircumcircle(circumcircle_plane, triangle, color.AQUA, 5)
+        if (len(mother_triangle_list.me())):
+            if temp_color[2] + 2 > 255:
+                temp_color[2] = 0
+            else:
+                temp_color[2] += 2
+            # print ("drawing triangles", [triangle.Id() for triangle in mother_triangle_list.me()])
+            for triangle in mother_triangle_list.me():
+                    drawTriangleLines(lines_plane, triangle, color.WHITE, 3)
+                    if draw_circumcribed_circles:
+                        drawTriangleCircumcircleCenter(circumcircle_plane, triangle, color.YELLOW, 2)
+                        drawTriangleCircumcircle(circumcircle_plane, triangle, color.AQUA, 3)
+            
+            for triangle in mother_triangle_list.me():
+                    if triangle.Id() == show_id:
+                        drawTriangleLines(lines_plane, triangle, temp_color, 3)
+                        drawTrianglePoints(points_plane, triangle, 10)
+                
+            if show_id > mother_triangle_list.me()[-1].Id():
+                show_id = mother_triangle_list.me()[0].Id()
 
-    for point in point_list.me():
-        pg.draw.circle(points_plane, addAlpha(point.color),(point.x, point.y), POINT_RADIUS)
+
+
+    if sorted_point_list:
+        for point in sorted_point_list:
+            pg.draw.circle(points_plane, color.MAGENTA, point.me(), 15)
+    
+    if new_point:
+        pg.draw.circle(points_plane, color.YELLOW, new_point.me(), 15)
+    if polygon_center:
+        pg.draw.circle(points_plane, color.AQUA, polygon_center, 15)
+
+
+    """for triangle in circumcircle_list:
+        drawTriangleCircumcircleCenter(circumcircle_plane, triangle, color.BLUE, 2)
+        drawTriangleCircumcircle(circumcircle_plane, triangle, color.AQUA, 5)"""
+
+    # for point in point_list.me():
+    #     pg.draw.circle(points_plane, addAlpha(point.color),(point.x, point.y), POINT_RADIUS)
+
 
     # draw text
     # draw mouse button clicks to bottom-left
