@@ -10,6 +10,7 @@ Clone/Download this repository and run `src/main.py`.
 
 ## About the project
 * Triangulation-algorithm **done**
+* refactoring **in near future**
 * update visuals and UX **in near future**
 
 *More Coming Soon!*
