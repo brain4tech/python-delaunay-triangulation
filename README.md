@@ -9,4 +9,7 @@ A visualization of the Bowyer-Watson-Algorithm for creating a delaunay-triangula
 Clone/Download this repository and run `src/main.py`.
 
 ## About the project
-*Coming Soon!*
+* Triangulation-algorithm **done**
+* update visuals and UX **in near future**
+
+*More Coming Soon!*
