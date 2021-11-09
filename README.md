@@ -16,4 +16,5 @@ Clone/Download this repository and run `src/main.py`.
 
 ## Known bugs
 * create two points on same location triggers DivisionByZero-Exception
+
 You found one? Feel free to contribute by opening an issue or making a pull request :)
