@@ -12,7 +12,6 @@ class PolygonPointList:
         # prevent duplicates
         for point_set in set(self.__plist):
             if point.me() == point_set.me():
-                print ("duplicate found, remove point from PolygonPointList", point.me())
                 return
         
         self.__plist.append(point)

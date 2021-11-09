@@ -17,7 +17,6 @@ class TriangleList:
         # prevent duplicates
         for triangle_set in set(self.__tlist):
             if triangle.me() == triangle_set.me():
-                print ("duplicate found, removed triangle", triangle.Id())
                 return
 
         self.__tlist.append(triangle)
