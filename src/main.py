@@ -59,7 +59,7 @@ polygon_center = None
 draw_circumcribed_circles = False
 circumcircle_list = []
 temp_color = list(color.GREEN)
-show_id = 0
+show_index = 0
 polygon_point_list = PolygonPointList()
 sorted_point_list = []
 
@@ -103,8 +103,7 @@ while run:
                         draw_circumcribed_circles = True
                 
                 case pg.K_F6:
-                    show_id += 1
-                    print (show_id)
+                    show_index += 1
 
                 case _:
                     pass
@@ -138,13 +137,13 @@ while run:
                 for triangle in mother_triangle_list.getPointInCircumcircles(new_point.me()):
                     circumcircle_list.append(triangle)
                     mother_triangle_list.remove(triangle)
-                    print ("new point within circumcircle of triangle", triangle.Id())
+                    print ("deleted triangle", triangle.Id())
                     polygon_point_list.append(triangle.getPointA())
                     polygon_point_list.append(triangle.getPointB())
                     polygon_point_list.append(triangle.getPointC())
 
                 sorted_point_list.clear()
-                sorted_point_list, polygon_center = polygon_point_list.sortPoints()
+                sorted_point_list, polygon_center = polygon_point_list.sortPoints(new_point.me())
                 for i in range(len(sorted_point_list)):
                     mother_triangle_list.append(Triangle([sorted_point_list[i], sorted_point_list[0 if i == len(sorted_point_list)-1 else i+1], new_point]))
                     print ("connecting point", sorted_point_list[i], "with", sorted_point_list[0 if i == len(sorted_point_list)-1 else i+1], "and", new_point.me())
@@ -184,13 +183,13 @@ while run:
                         drawTriangleCircumcircleCenter(circumcircle_plane, triangle, color.YELLOW, 2)
                         drawTriangleCircumcircle(circumcircle_plane, triangle, color.AQUA, 3)
             
-            for triangle in mother_triangle_list.me():
-                    if triangle.Id() == show_id:
-                        drawTriangleLines(lines_plane, triangle, temp_color, 3)
-                        drawTrianglePoints(points_plane, triangle, 10)
+            for i in range(len(mother_triangle_list.me())):
+                    if i == show_index:
+                        drawTriangleLines(lines_plane, mother_triangle_list.me()[i], temp_color, 3)
+                        drawTrianglePoints(points_plane, mother_triangle_list.me()[i], 10)
                 
-            if show_id > mother_triangle_list.me()[-1].Id():
-                show_id = mother_triangle_list.me()[0].Id()
+            if show_index > len(mother_triangle_list.me())-1:
+                show_index = 0
 
 
 
