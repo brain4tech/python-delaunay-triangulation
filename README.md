@@ -15,7 +15,9 @@ Clone/Download this repository and run `src/main.py`.
 
 *More Coming Soon!*
 
-## Known bugs
+## Known bugs and issues
 * create two points on same location triggers DivisionByZero-Exception
+* wrong file name for lib/drawrectangleelements.py; should be drawtriangleelements.py
+* confusing variable names and missing refactoring
 
 You found one? Feel free to contribute by opening an issue or making a pull request :)
