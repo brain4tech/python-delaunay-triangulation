@@ -49,7 +49,7 @@ class PolygonPointList:
 
 
 
-    def sortPoints(self, point_list = None):
+    def sortPoints(self, center_point = None, point_list = None):
         
         if point_list:
             self.clear()
@@ -57,15 +57,15 @@ class PolygonPointList:
         
         self.__ordered_plist = []
 
-
-        self.__calcCenterPoint()
+        if center_point:
+            self.__center = center_point
+        else:
+            self.__calcCenterPoint()
 
         # calculate angle to center for all points
         # https://math.stackexchange.com/questions/707673/find-angle-in-degrees-from-one-point-to-another-in-2d-space/2587852
         angle_list = []
         for i in range(len(self.__plist)):
-            #print((self.__plist[i].me(), self.__center), (self.__plist[i].y - self.__center[1], self.__plist[i].x - self.__center[0]), atan2(self.__plist[i].y - self.__center[1], self.__plist[i].x - self.__center[0]))
-            print (self.__plist[i].me(), atan2(self.__plist[i].y - self.__center[1], self.__plist[i].x - self.__center[0]))
             angle_list.append(atan2(self.__plist[i].y - self.__center[1], self.__plist[i].x - self.__center[0]))
         
         # zip angles and plist for combined sorting
