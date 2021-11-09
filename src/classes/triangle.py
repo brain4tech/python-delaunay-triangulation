@@ -94,6 +94,10 @@ class Triangle:
         """Returns point C"""
         return self.__pc
     
+    def getPoints(self):
+        """Returns corner points"""
+        return (self.__pa, self.__pb, self.__pc)
+    
     def getCircumcircleCenter(self):
         """Returns center position of circumcircle"""
         return self.__ccenter
