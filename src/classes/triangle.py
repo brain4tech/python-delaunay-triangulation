@@ -1,17 +1,22 @@
 
 # class for storing a triangle
 
-from math import sqrt
+from math import sqrt, atan2
 
 from classes.point import Point
 
 class Triangle:
-    def __init__(self):
+    def __init__(self, points: list[Point]= None, id = None):
         self.__pa = None
         self.__pb = None
         self.__pc = None
         self.__ccenter = None
         self.__cradius = None
+
+        self.__id = id
+
+        if points:
+            self.setCornerPoints(points)
     
     def reset(self):
         """Resets all stored and calculated values"""
@@ -25,10 +30,11 @@ class Triangle:
         """Calculates center point of triangle circumcircle"""
         # https://en.wikipedia.org/wiki/Circumscribed_circle#Circumcenter_coordinates
 
-        d = 2*(self.__pa.x * (self.__pb.x + self.__pc.x) + self.__pb.x * (self.__pc.x + self.__pa.x) + self.__pc.x * (self.__pa.x + self.__pb.x))
-        x = (self.__pa.x**2 + self.__pa.y**2)*(self.__pb.y + self.__pc.y) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pc.y - self.__pa.y) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pa.y - self.__pb.y)
-        y = (self.__pa.x**2 + self.__pa.y**2)*(self.__pc.x + self.__pb.x) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pa.x - self.__pc.x) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pb.x - self.__pa.x)
-
+        x = (self.__pa.x**2 + self.__pa.y**2)*(self.__pb.y - self.__pc.y) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pc.y - self.__pa.y) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pa.y - self.__pb.y)
+        y = (self.__pa.x**2 + self.__pa.y**2)*(self.__pc.x - self.__pb.x) + (self.__pb.x**2 + self.__pb.y**2)*(self.__pa.x - self.__pc.x) + (self.__pc.x**2 + self.__pc.y**2)*(self.__pb.x - self.__pa.x)
+        
+        d = 2*(self.__pa.x * (self.__pb.y - self.__pc.y) + self.__pb.x * (self.__pc.y - self.__pa.y) + self.__pc.x * (self.__pa.y - self.__pb.y))
+        
         self.__ccenter = (x/d, y/d)
 
     def __calculateCRadius(self):
@@ -37,8 +43,8 @@ class Triangle:
 
     def __calculateDistance(self, pfrom, pto):
         """Returns distance from two given points"""
-        difference_x = abs(pfrom[0] - pto[0])
-        difference_y = abs(pfrom[1] - pto[1])
+        difference_x = pto[0] - pfrom[0]
+        difference_y = pto[1] - pfrom[1]
 
         return sqrt(difference_x**2 + difference_y**2)
     
@@ -57,80 +63,20 @@ class Triangle:
     def setCornerPoints(self, points: list[Point]):
         """Sets and sorts given corner points of triangle in counterclockwise order"""
 
-        sorted_points = points[:]
-        sorted_points.sort()
+        # calculate triangle center
+        center = ((points[0].x + points[1].x + points[2].x)/3, (points[0].y + points[1].y + points[2].y)/3)
+
+        angle_list = []
+        for i in range(len(points)):
+            angle_list.append(atan2(points[i].y - center[1], points[i].x - center[0]))
         
-        # sort list in counterclockwise order (how?)
-        # A: left-most and top-most
-        self.__pa = sorted_points[0]
-        sorted_points.pop(0)
+        # zip angles and plist for combined sorting
+        combined_list = list(zip(angle_list, points[:]))
+        combined_list.sort(reverse=True)
 
-        # B, quick and dirty
-        p2 = sorted_points[0]
-        p3 = sorted_points[1]
-        lower_point = None
-        higher_point = None
-
-        # check which point is lower
-        if p2.y > p3.y:
-            lower_point = p2
-            higher_point = p3
-        else:
-            lower_point = p3
-            higher_point = p2
-        
-        # calculate connection vector between points (to calculate sign)
-        connection_lower = (lower_point.x - self.__pa.x, lower_point.y - self.__pa.y)
-        connection_higher = (higher_point.x - self.__pa.x, higher_point.y - self.__pa.y)
-
-        # get slope from A to higher and lower point
-        slope_lower = abs(self.calculateSlope(self.__pa.me(), lower_point.me()))
-        slope_higher = abs(self.calculateSlope(self.__pa.me(), higher_point.me()))
-    
-        # check if sign of lower point is positive ( = goes down)
-        if self.__getSign(connection_lower[1]) == True:
-
-            # check if connection vector signs are equal ( = same direction)
-            if self.__getSign(connection_higher[1]) == self.__getSign(connection_lower[1]):
-                
-                # check if slope of higher point < slope of lower point
-                if slope_higher < slope_lower:
-                    self.__pb = lower_point
-                    sorted_points.remove(lower_point)
-
-                else:
-                    self.__pb = higher_point
-                    sorted_points.remove(higher_point)
-            
-            else:
-                self.__pb = lower_point
-                sorted_points.remove(lower_point)
-
-        # check if sign of lower is zero or negative ( = goes down)
-        elif self.__getSign(connection_lower[1]) == False:
-
-            # check if connection vector signs are equal (to calculate sign)
-            if self.__getSign(connection_higher[1]) == self.__getSign(connection_lower[1]):
-                
-                # check if slope of higher point > slope of lower point
-                if slope_higher > slope_lower:
-                    self.__pb = lower_point
-                    sorted_points.remove(lower_point)
-
-                else:
-                    self.__pb = higher_point
-                    sorted_points.remove(higher_point)
-            
-            else:
-                self.__pb = lower_point
-                sorted_points.remove(lower_point)
-
-        else:
-            self.__pb = lower_point
-            sorted_points.remove(lower_point)
-
-        # C: remaining point
-        self.__pc = sorted_points[0]
+        self.__pa = combined_list[0][1]
+        self.__pb = combined_list[1][1]
+        self.__pc = combined_list[2][1]
 
         # calculate center and radius of circumcircle
         self.__calculateCCenter()
@@ -147,6 +93,24 @@ class Triangle:
     def getPointC(self):
         """Returns point C"""
         return self.__pc
+    
+    def getPoints(self):
+        """Returns corner points"""
+        return (self.__pa, self.__pb, self.__pc)
+    
+    def getCircumcircleCenter(self):
+        """Returns center position of circumcircle"""
+        return self.__ccenter
+
+    def getCircumcircleRadius(self):
+        """Returns radius of circumcircle"""
+        return self.__cradius
+    
+    def Id(self):
+        return self.__id
+    
+    def setId(self, id):
+        self.__id = id
 
     def isPointInCircumcircle(self, point):
         """Check if given point is within circumcircle of triangle"""

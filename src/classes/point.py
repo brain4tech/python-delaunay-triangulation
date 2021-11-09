@@ -1,10 +1,12 @@
 # class for representing one point
 
 class Point:
-    def __init__(self, x_, y_, color_ = (0, 0, 0)):
+    def __init__(self, x_, y_, color_ = (0, 0, 0), tag = None):
         self.x = x_
         self.y = y_
         self.color = color_
+
+        self.__tag = tag
     
     # unnecessary because variables are public, but use this for cleaner code
     def setX(self, new_x):
@@ -18,6 +20,9 @@ class Point:
 
     def me(self):
         return self.__toReadable()
+    
+    def Tag(self):
+        return self.__tag
     
     def __toReadable(self):
         return (self.x, self.y)

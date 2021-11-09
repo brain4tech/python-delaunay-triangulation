@@ -1,5 +1,5 @@
 # Delaunay-Triangulation
-A visualization of <>'s algorithm for creating a delaunay-triangulation written in Python using PyGame
+A visualization of the Bowyer-Watson-Algorithm for creating a delaunay-triangulation written in Python using Pygame
 
 ### Requirements
 * [Python 3.10](https://www.python.org/)
@@ -9,4 +9,4 @@ A visualization of <>'s algorithm for creating a delaunay-triangulation written 
 Clone/Download this repository and run `src/main.py`.
 
 ## About the project
-*ToDo*
+*Coming Soon!*

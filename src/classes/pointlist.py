@@ -45,10 +45,6 @@ class PointList:
 
 if __name__ == '__main__':
     test_list = PointList()
-
-    # test_list.addPoint(Point(23, 34))
-    # test_list.addPoint(Point(2, 3))
-
     test_list.generatePoints(0, 400, 0, 200, 10)
 
     print(test_list.getPoints())
