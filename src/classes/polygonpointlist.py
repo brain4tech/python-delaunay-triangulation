@@ -8,6 +8,7 @@ class PolygonPointList:
         self.__center = None
     
     def append(self, point):
+        """Appends a point to the list"""
         
         # prevent duplicates
         for point_set in set(self.__plist):
@@ -17,12 +18,17 @@ class PolygonPointList:
         self.__plist.append(point)
     
     def clear(self):
+        """Clears internal values"""
         self.__plist.clear()
+        self.__ordered_plist.clear()
+        self.__center = None
     
     def me(self):
-        return self.__plist
+        """Returns copy of point list"""
+        return self.__plist[:]
     
     def __calcCenterPoint(self):
+        """Calculates center points of polygon with predefined internal points"""
 
         a_loop = 0
         x_loop = 0
@@ -49,6 +55,7 @@ class PolygonPointList:
 
 
     def sortPoints(self, center_point = None, point_list = None):
+        """Returns all points in clockwise order from (passed) center point"""
         
         if point_list:
             self.clear()
@@ -74,5 +81,5 @@ class PolygonPointList:
         for pack in combined_list:
             self.__ordered_plist.append(pack[1])
 
-        return self.__ordered_plist[:], self.__center
+        return self.__ordered_plist[:], self.__center[:]
     
