@@ -1,2 +1,2 @@
-# pygame pre-release to support manylinux-builds for python-3.10
-pygame==2.0.3.dev4
+# list of requirements for this project
+pygame
