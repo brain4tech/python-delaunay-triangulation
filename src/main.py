@@ -134,8 +134,9 @@ while run_loop:
 
 				case pg.K_F8:
 					# show circumcircles of highlighted triangle
-					draw_triangle_circumcircle = not draw_triangle_circumcircle
-					print ("Toggled circumcircles of highlighted triangle", "on" if draw_triangle_circumcircle else "off")
+					if highlight_triangle:
+						draw_triangle_circumcircle = not draw_triangle_circumcircle
+						print ("Toggled circumcircles of highlighted triangle", "on" if draw_triangle_circumcircle else "off")
 
 				case pg.K_F10:
 					point_list.clear()
@@ -225,7 +226,7 @@ while run_loop:
 			drawTriangleLines(lines_plane, triangle, color.GRAY, LINE_WIDTH, mother_triangle_point_tag, True)
 
 	# highlight triangle
-	if highlight_triangle:
+	if highlight_triangle and triangle_list.me():
 		if triangle_highlight_next:
 			if highlighed_triangle_index + 1 > len(triangle_list.me()) - 1:
 				highlighed_triangle_index = 0
@@ -239,6 +240,10 @@ while run_loop:
 			triangle_highlight_color[2] = 0
 		else:
 			triangle_highlight_color[2] += 1
+		
+		if draw_triangle_circumcircle:
+			drawTriangleCircumcircle(lines_plane, triangle_list.me()[highlighed_triangle_index], color.BLUE, LINE_WIDTH)
+			drawTriangleCircumcircleCenter(points_plane, triangle_list.me()[highlighed_triangle_index], color.YELLOW, 3)
 
 	# update text on plane
 	updateText()
