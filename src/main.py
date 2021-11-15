@@ -68,7 +68,7 @@ highlighed_point = None
 new_point = None
 polygon_center = None
 polygon_point_list = PolygonPointList()
-sorted_point_list = []
+sorted_polygon_point_list = []
 
 # FUNCTIONS FOR LOOP
 def updateText():
@@ -115,9 +115,10 @@ while run_loop:
 					else:
 						run_loop = False
 				
-				case pg.K_2:
+				case pg.K_F2:
 					# toggle mother triangle connections
 					draw_mother_triangle_connections = not draw_mother_triangle_connections
+					print ("Toggled mother triangle connections", "on" if draw_mother_triangle_connections else "off")
 					pass
 				
 				case pg.K_F4:
@@ -181,7 +182,7 @@ while run_loop:
 					polygon_point_list.append(triangle.getPointC())
 
 				# ... sort them ...
-				sorted_polygon_point_list, _ = polygon_point_list.sortPoints(new_point.me())
+				sorted_polygon_point_list, _ = polygon_point_list.sortPoints(center_point=new_point.me())
 
 				# ... and create new triangles
 				for i in range(len(sorted_polygon_point_list)):
@@ -214,6 +215,10 @@ while run_loop:
 	# draw all points on plane
 	for point in point_list.me():
 		pg.draw.circle(points_plane, point.color, point.me(), POINT_RADIUS)
+	
+	if draw_mother_triangle_connections:
+		for triangle in triangle_list.me():
+			drawTriangleLines(lines_plane, triangle, color.GRAY, LINE_WIDTH, mother_triangle_point_tag, True)
 
 	# update text on plane
 	updateText()
