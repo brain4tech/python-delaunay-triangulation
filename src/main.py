@@ -62,6 +62,7 @@ triangle_highlight_next = False
 
 # highlighting variables
 triangle_highlight_color = list(color.GREEN)
+highlighed_triangle_index = 0
 highlighed_point = None
 
 # dynamic variables
@@ -119,28 +120,29 @@ while run_loop:
 					# toggle mother triangle connections
 					draw_mother_triangle_connections = not draw_mother_triangle_connections
 					print ("Toggled mother triangle connections", "on" if draw_mother_triangle_connections else "off")
-					pass
-				
+
 				case pg.K_F4:
 					# toggle triangle highlighting
 					highlight_triangle = not highlight_triangle
-					pass
+					print ("Toggled triangle highlighting", "on" if highlight_triangle else "off")
 
 				case pg.K_F6:
 					# switch marked triangle
-					triangle_highlight_next = True
-					pass
+					if highlight_triangle:
+						triangle_highlight_next = True
+						print ("Highlight next triangle")
 
 				case pg.K_F8:
 					# show circumcircles of highlighted triangle
 					draw_triangle_circumcircle = not draw_triangle_circumcircle
-					pass
+					print ("Toggled circumcircles of highlighted triangle", "on" if draw_triangle_circumcircle else "off")
 
 				case pg.K_F10:
 					point_list.clear()
 					triangle_list.clear()
 					resetHighlighedPoint()
 					WINDOW.fill(CLEAR_CANVAS_COLOR)
+					print ("Removed visualization")
 
 				case _:
 					pass
@@ -216,9 +218,27 @@ while run_loop:
 	for point in point_list.me():
 		pg.draw.circle(points_plane, point.color, point.me(), POINT_RADIUS)
 	
+	# visualization features
+	# mother triangle connections
 	if draw_mother_triangle_connections:
 		for triangle in triangle_list.me():
 			drawTriangleLines(lines_plane, triangle, color.GRAY, LINE_WIDTH, mother_triangle_point_tag, True)
+
+	# highlight triangle
+	if highlight_triangle:
+		if triangle_highlight_next:
+			if highlighed_triangle_index + 1 > len(triangle_list.me()) - 1:
+				highlighed_triangle_index = 0
+			else:
+				highlighed_triangle_index += 1
+			
+			triangle_highlight_next = False
+		
+		drawTriangleLines(lines_plane, triangle_list.me()[highlighed_triangle_index], triangle_highlight_color, LINE_WIDTH)
+		if triangle_highlight_color[2] + 1 > 255:
+			triangle_highlight_color[2] = 0
+		else:
+			triangle_highlight_color[2] += 1
 
 	# update text on plane
 	updateText()
