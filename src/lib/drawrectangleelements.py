@@ -4,20 +4,38 @@ from lib.misc import addAlphaChannel
 import constants.colors as color
 
 
-def drawTriangleLines(plane, triangle, line_color, line_thickness, exclude_tag=None):
+def drawTriangleLines(plane, triangle, line_color, line_thickness, exclude_tag=None, reverse_tag = False):
 	"Draws (all) lines of given triangle."
+	
 	if exclude_tag:
-		if triangle.getPointA().Tag() != exclude_tag and triangle.getPointB().Tag() != exclude_tag:
-			pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointA().me(), triangle.getPointB().me(),
-	             line_thickness)
+	
+		if not reverse_tag:
+			if triangle.getPointA().Tag() != exclude_tag and triangle.getPointB().Tag() != exclude_tag:
+				pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointA().me(), triangle.getPointB().me(),
+					line_thickness)
 
-		if triangle.getPointB().Tag() != exclude_tag and triangle.getPointC().Tag() != exclude_tag:
-			pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointB().me(), triangle.getPointC().me(),
-			             line_thickness)
+			if triangle.getPointB().Tag() != exclude_tag and triangle.getPointC().Tag() != exclude_tag:
+				pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointB().me(), triangle.getPointC().me(),
+							line_thickness)
 
-		if triangle.getPointC().Tag() != exclude_tag and triangle.getPointA().Tag() != exclude_tag:
-			pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointC().me(), triangle.getPointA().me(),
-			             line_thickness)
+			if triangle.getPointC().Tag() != exclude_tag and triangle.getPointA().Tag() != exclude_tag:
+				pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointC().me(), triangle.getPointA().me(),
+							line_thickness)
+		else:
+			if triangle.getPointA().Tag() == exclude_tag or triangle.getPointB().Tag() == exclude_tag:
+				pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointA().me(), triangle.getPointB().me(),
+					line_thickness)
+
+			if triangle.getPointB().Tag() == exclude_tag or triangle.getPointC().Tag() == exclude_tag:
+				pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointB().me(), triangle.getPointC().me(),
+							line_thickness)
+
+			if triangle.getPointC().Tag() == exclude_tag or triangle.getPointA().Tag() == exclude_tag:
+				pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointC().me(), triangle.getPointA().me(),
+							line_thickness)
+
+
+
 	else:
 		pg.draw.line(plane, addAlphaChannel(line_color), triangle.getPointA().me(), triangle.getPointB().me(),
 	             line_thickness)
