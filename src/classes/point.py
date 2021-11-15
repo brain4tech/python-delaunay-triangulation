@@ -24,6 +24,12 @@ class Point:
     def Tag(self):
         return self.__tag
     
+    def equals(self, other):
+        if self.x ==other.x and self.y==other.y:
+            return True
+        
+        return False
+    
     def __toReadable(self):
         return (self.x, self.y)
 
@@ -41,3 +47,4 @@ class Point:
                 return True
         
         return False
+    
