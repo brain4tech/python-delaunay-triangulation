@@ -12,7 +12,7 @@ from classes.triangle import Triangle
 from classes.trianglelist import TriangleList
 
 from lib.misc import *
-from lib.drawrectangleelements import *
+from lib.drawtriangleelements import *
 from lib.rendertext import *
 import constants.colors as color
 
@@ -67,6 +67,7 @@ highlighed_point = None
 
 # dynamic variables
 new_point = None
+new_point_exists = False
 polygon_center = None
 polygon_point_list = PolygonPointList()
 sorted_polygon_point_list = []
@@ -159,47 +160,54 @@ while run_loop:
 			# reset color of selected point
 			resetHighlighedPoint()
 
-			# create new point
+			# create new point and prevent doubles
 			new_point = Point(mouse_x, mouse_y, POINT_COLOR)
+			new_point_exists = False
 
-			# calculate triangulation
-			# 1. no other triangle than mother triangle
-			if len(triangle_list.me()) == 0:
-				triangle_list.append(
-					Triangle([mother_triangle.getPointA(), mother_triangle.getPointB(), new_point]))
-				triangle_list.append(
-					Triangle([mother_triangle.getPointB(), mother_triangle.getPointC(), new_point]))
-				triangle_list.append(
-					Triangle([mother_triangle.getPointC(), mother_triangle.getPointA(), new_point]))
+			for point in point_list.me():
+				if point.equals(new_point):
+					new_point_exists = True
 
-			# 2. all other triangles
-			else:
+			if not new_point_exists:
 
-				polygon_point_list.clear()
-				sorted_polygon_point_list.clear()
+				# calculate triangulation
+				# 1. no other triangle than mother triangle
+				if len(triangle_list.me()) == 0:
+					triangle_list.append(
+						Triangle([mother_triangle.getPointA(), mother_triangle.getPointB(), new_point]))
+					triangle_list.append(
+						Triangle([mother_triangle.getPointB(), mother_triangle.getPointC(), new_point]))
+					triangle_list.append(
+						Triangle([mother_triangle.getPointC(), mother_triangle.getPointA(), new_point]))
 
-				# add all points of outer triangles to polygon point list ...
-				for triangle in triangle_list.getPointInCircumcircles(new_point.me()):
-					triangle_list.remove(triangle)
-					polygon_point_list.append(triangle.getPointA())
-					polygon_point_list.append(triangle.getPointB())
-					polygon_point_list.append(triangle.getPointC())
+				# 2. all other triangles
+				else:
 
-				# ... sort them ...
-				sorted_polygon_point_list, _ = polygon_point_list.sortPoints(center_point=new_point.me())
+					polygon_point_list.clear()
+					sorted_polygon_point_list.clear()
 
-				# ... and create new triangles
-				for i in range(len(sorted_polygon_point_list)):
-					triangle_list.append(Triangle(
-						[sorted_polygon_point_list[i],
-						 sorted_polygon_point_list[0 if i == len(sorted_polygon_point_list) - 1 else i + 1],
-						 new_point]))
+					# add all points of outer triangles to polygon point list ...
+					for triangle in triangle_list.getPointInCircumcircles(new_point.me()):
+						triangle_list.remove(triangle)
+						polygon_point_list.append(triangle.getPointA())
+						polygon_point_list.append(triangle.getPointB())
+						polygon_point_list.append(triangle.getPointC())
 
-			# 3. add new point to global point list
-			point_list.append(new_point)
+					# ... sort them ...
+					sorted_polygon_point_list, _ = polygon_point_list.sortPoints(center_point=new_point.me())
 
-			# 4. highlight new point
-			setHighlightedPoint(new_point)
+					# ... and create new triangles
+					for i in range(len(sorted_polygon_point_list)):
+						triangle_list.append(Triangle(
+							[sorted_polygon_point_list[i],
+							sorted_polygon_point_list[0 if i == len(sorted_polygon_point_list) - 1 else i + 1],
+							new_point]))
+
+				# 3. add new point to global point list
+				point_list.append(new_point)
+
+				# 4. highlight new point
+				setHighlightedPoint(new_point)
 
 		case 3:  # secondary clicked; mark point (and show details)
 			nearest_point = point_list.getNearestPoint((mouse_x, mouse_y))
