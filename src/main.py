@@ -53,10 +53,22 @@ mother_triangle_point_tag = "mother_triangle"
 mother_triangle = MotherTriangle(WINDOW_WIDTH, WINDOW_HEIGHT, triangle_tag=mother_triangle_point_tag)
 
 # VARS FOR LOOP
+# state variables
 run_loop = True
-highlighed_point, new_point, polygon_center = None, None, None
+draw_mother_triangle_connections = False
+draw_triangle_circumcircle = False
+highlight_triangle = False
+triangle_highlight_next = False
+
+# highlighting variables
+triangle_highlight_color = list(color.GREEN)
+highlighed_point = None
+
+# dynamic variables
+new_point = None
+polygon_center = None
 polygon_point_list = PolygonPointList()
-sorted_polygon_point_list = []
+sorted_point_list = []
 
 # FUNCTIONS FOR LOOP
 def updateText():
@@ -102,6 +114,26 @@ while run_loop:
 						resetHighlighedPoint()
 					else:
 						run_loop = False
+				
+				case pg.K_2:
+					# toggle mother triangle connections
+					draw_mother_triangle_connections = not draw_mother_triangle_connections
+					pass
+				
+				case pg.K_F4:
+					# toggle triangle highlighting
+					highlight_triangle = not highlight_triangle
+					pass
+
+				case pg.K_F6:
+					# switch marked triangle
+					triangle_highlight_next = True
+					pass
+
+				case pg.K_F8:
+					# show circumcircles of highlighted triangle
+					draw_triangle_circumcircle = not draw_triangle_circumcircle
+					pass
 
 				case pg.K_F10:
 					point_list.clear()
