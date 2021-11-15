@@ -124,6 +124,7 @@ while run_loop:
 				case pg.K_F4:
 					# toggle triangle highlighting
 					highlight_triangle = not highlight_triangle
+					triangle_highlight_next = True
 					print ("Toggled triangle highlighting", "on" if highlight_triangle else "off")
 
 				case pg.K_F6:
@@ -228,10 +229,16 @@ while run_loop:
 	# highlight triangle
 	if highlight_triangle and triangle_list.me():
 		if triangle_highlight_next:
-			if highlighed_triangle_index + 1 > len(triangle_list.me()) - 1:
-				highlighed_triangle_index = 0
-			else:
-				highlighed_triangle_index += 1
+			while True:
+				if highlighed_triangle_index + 1 > len(triangle_list.me()) - 1:
+					highlighed_triangle_index = 0
+				else:
+					highlighed_triangle_index += 1
+				
+				if triangle_list.me()[highlighed_triangle_index].includesTag(mother_triangle_point_tag):
+					continue
+
+				break
 			
 			triangle_highlight_next = False
 		
