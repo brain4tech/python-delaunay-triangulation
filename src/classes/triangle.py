@@ -123,6 +123,12 @@ class Triangle:
         """Returns itself in a readable data type (dict)"""
         return self.__toReadable()
     
+    def includesTag(self, tag):
+        if self.__pa.Tag() == tag or self.__pb.Tag() == tag or self.__pc.Tag() == tag:
+            return True
+        
+        return False
+    
     def __toReadable(self):
         """Converts own member variables into a readable data type (dict)"""
         return {'a': self.__pa, 'b': self.__pb, 'c': self.__pc, 'center': self.__ccenter, 'radius': self.__cradius}
