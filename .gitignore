@@ -1,5 +1,8 @@
 # ignore all __pycache__ directories
-**/__pycache__
+__pycache__
 
 # ignore .idea directory
 .idea
+
+# code counting dir
+.VSCodeCounter
