@@ -9,7 +9,7 @@ A visualization of the Bowyer-Watson-Algorithm for creating a delaunay-triangula
 Clone/Download this repository and run `src/main.py`.
 
 ## About the project
-*More information coming soon.*
+This project is released. New features may follow, but this is it :). Have fun, share and enjoy!
 
 ## Known bugs and issues
 * ~~create two points on same location triggers DivisionByZero-Exception~~
