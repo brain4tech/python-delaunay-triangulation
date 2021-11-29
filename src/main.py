@@ -157,9 +157,6 @@ while run_loop:
 	match mouse_click_action_id:
 		case 1:  # primary clicked, create point
 
-			# reset color of selected point
-			resetHighlighedPoint()
-
 			# create new point and prevent doubles
 			new_point = Point(mouse_x, mouse_y, POINT_COLOR)
 			new_point_exists = False
@@ -183,9 +180,6 @@ while run_loop:
 				# 2. all other triangles
 				else:
 
-					polygon_point_list.clear()
-					sorted_polygon_point_list.clear()
-
 					# add all points of outer triangles to polygon point list ...
 					for triangle in triangle_list.getPointInCircumcircles(new_point.me()):
 						triangle_list.remove(triangle)
@@ -206,8 +200,13 @@ while run_loop:
 				# 3. add new point to global point list
 				point_list.append(new_point)
 
-				# 4. highlight new point
+				# 4. set highlighting new point
+				resetHighlighedPoint()
 				setHighlightedPoint(new_point)
+
+				# 5. reset used lists
+				polygon_point_list.clear()
+				sorted_polygon_point_list.clear()
 
 		case 3:  # secondary clicked; mark point (and show details)
 			nearest_point = point_list.getNearestPoint((mouse_x, mouse_y))
